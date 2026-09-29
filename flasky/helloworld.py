@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, flash, render_template, session, redirect, url_for
+from flask import Flask, flash, render_template, session, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
@@ -35,6 +35,7 @@ def index():
 
         if 'utoronto.ca' in form.email.data.lower():
             session['email'] = form.email.data
+            return redirect(url_for('chat'))
         else:
             session['email'] = None
             flash('Please use your UofT email.')    
@@ -46,3 +47,30 @@ def index():
 @app.route("/user/<name>")
 def user(name):
     return render_template("user.html", name=name, current_time=datetime.utcnow())
+
+
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+    reply = None
+
+    if request.method == 'POST':
+        message = request.form.get('message', '')
+
+        if "hello" in message.lower():
+            reply = "Hello!"
+        elif "my name is" in message.lower():
+            session["name"] = message.lower().replace("my name is", "", 1)
+            reply = "Nice to meet you, " + session["name"]
+        elif "what is my name" in message.lower():
+            reply = "Your name is " + session["name"]
+        else:
+            reply = "I don't understand."
+
+    return render_template('chat.html', reply=reply, name=session["name"])
+
+@app.route('/logout')
+def logout():
+  session.clear()
+  flash('You have been logged out.')
+  return redirect(url_for('index'))
+
