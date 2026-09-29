@@ -2,3 +2,6 @@
 
 Tim Krauss
 this repo is a clone of https://github.com/miguelgrinberg/flasky
+
+Screenshot of activity 1.3:
+![alt text](activity3.png)
